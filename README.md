@@ -1,3 +1,13 @@
+# Problem 1.4: Intelligent Video Chunking — solution
+
+Linear-cost, CPU-only video chunker: one low-res decode pass, cheap genre-aware boundary signals, a per-video profile, and dynamic-programming boundary selection with information-density-aware chunk lengths. Outputs scene / section / whole-video chunks with keyframes and indexing hints.
+
+- Design, choices and results: [`docs/README.md`](docs/README.md)
+- Code: [`src/`](src/) (entry point `src/main.py`), tests in [`tests/`](tests/)
+- Exact commands: [`run.yaml`](run.yaml)
+
+---
+
 # Problem 1.4: Intelligent Video Chunking
 
 ## Submission instructions

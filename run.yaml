@@ -1,19 +1,22 @@
-# Fill this in before you submit -- our evaluator runs these commands
-# EXACTLY as written, in this order, from a fresh checkout of your fork.
-# Keep every command non-interactive (no prompts) and idempotent.
+# Commands are run exactly as written, in order, from a fresh checkout.
+# Everything is CPU-only and non-interactive. ffmpeg comes from the
+# imageio-ffmpeg wheel, so no system packages are needed.
 
 setup_commands:
   - "pip install -r requirements.txt"
-  # - add every other setup step here, in order (env vars, downloads, etc.)
 
 run_commands:
   - "python src/main.py --help"
-  # - the real command(s) that actually run your solution
+  # 1) Boundary accuracy on generated videos with known ground truth (~1 min).
+  - "python src/main.py eval-synthetic --out out/eval"
+  # 2) Real data: 6 short Video-MME videos spread across domains (~150 MB),
+  #    with subtitles. Raise --max-videos / add --duration medium long for more.
+  - "python src/main.py download --dataset aintropy-ai/video-mme-sample10 --dest data/video-mme-sample10 --max-videos 6 --duration short"
+  # 3) Chunk them. Output: out/chunks/<id>.chunks.json + out/chunks/chunks.jsonl
+  - "python src/main.py chunk data/video-mme-sample10/videos --subs data/video-mme-sample10/subtitles --out out/chunks"
+  - "python src/main.py report out/chunks"
 
-test_commands: []
-  # optional -- commands that run your own tests/checks, if you have any
+test_commands:
+  - "python -m pytest -q tests"
 
-notes: ""
-  # anything we should know before running this (e.g. "needs a GPU",
-  # "takes about 10 minutes", "expects a sample dataset already present
-  # under data/, see docs/ for where to get it")
+notes: "CPU only, no GPU or API keys. Total runtime about 3-5 minutes on 2 cores, most of it the download. Step 2 needs network access to huggingface.co. To chunk the full 90-video sample, drop --max-videos and --duration in step 2 (11.2 GB). Design and results are in docs/README.md."
